@@ -57,27 +57,28 @@
 
 - %演算子を使う方法
 ```python
-label(text = bpy.app.translations.pgettext_iface(
-        "Active Object is %s") % (context.active_object.name) )
+# 翻訳結果にフォーマットを適用するので、pgettext_iface() の外に "% (~)"を記述する
+label(text = bpy.app.translations.pgettext_iface("Active Object is %s") % (context.active_object.name) )
 ```
 
 - `str.format()`を使う方法
 ```python
-label(text = bpy.app.translations.pgettext_iface(
-        "Active Object is {}").format(context.active_object.name) )
+# 翻訳結果にフォーマットを適用するので、pgettext_iface() の外に ".format(~)"を記述する
+label(text = bpy.app.translations.pgettext_iface("Active Object is {}").format(context.active_object.name) )
 ```
 
 - f 文字列を使う方法その1： f"~"を直接記述し、全体を\' \'で囲む　→　翻訳結果を`eval()`で評価
 ```python
+# eval( 'f"名前は {name} です"' ) のようなもの。もっと良い方法があると思う
 label(text = eval(
-        bpy.app.translations.pgettext_iface(
-            'f"Active Object is {context.active_object.name}"' )
+        bpy.app.translations.pgettext_iface('f"Active Object is {context.active_object.name}"' )
         )
     )
 ```
 
 - f文字列を使う方法その2： f"~"は記述せず、翻訳後に追加する　→　`eval()`で評価
 ```python
+# eval( f'f"{名前は {name} です}"' ) のようなもの。もっと良い方法が知りたい
 label(text = eval(
         f'f"{bpy.app.translations.pgettext_iface("4: Active Object is {name}")}"'
         )
@@ -94,5 +95,14 @@ label(text = eval(
 ![](https://github.com/nikogoli/Testing_Traslation_using_string_format/blob/main/result.png)
 
 
+<details><summary>◇感想</summary>
 
+- 手軽なのは`.format()`だが、空の"{}"が入った文章を扱いたくない
+- f 文字列その1は悪くないが、f を入れ忘れる自分が想像できるのであまり使いたくない
+- f 文字列その2は、2行に分ければ**記述は**整理できるが、ミスが多発しそうなのは変わらず
+	```python
+	text = bpy.app.translations.pgettext_iface("4: Active Object is {name}")
+	self.layout.label(text = eval(f"f'{text}'"))
+	```
+</details>
 　　　
