@@ -12,7 +12,6 @@
 	ツールチップ(多分description)では`bpy.app.translations.pgettext_tip()`を使う<br>
 	`bpy.app.translations.pgettext()`でも可能だが、公式側は推奨していない
 
-
 - %演算子 ・ `str.format()`を使う方法
 	- 長所：記述量が少ない
 	- 短所：辞書側の記述が `"{} を削除しました"` のようになり、少し情報不足
@@ -91,6 +90,17 @@ label(text = eval(
 
 アドオンを読み込み、Testingタブからアドオンの詳細を表示させると、以下のような表示となる<br>
 アクティブなオブジェクトを変更し、アドオンの詳細の上にマウスを動かすなどして再度 draw() を実行させると、翻訳結果も変わることが確認できるはず
+
+<details><summary>◇仕組みの自分なりの理解</summary>
+
+- 文字列フォーマットを直接使った場合：<br>
+「英文に対応する日本語」の取得よりも前に、英語文章に対してフォーマットが適用されてしまう<br>
+ 　`"Object is {name}"　→　フォーマット適用　→　"Object is Cube"　→　対応する日本語の取得に失敗する(訳されない)`
+ 
+- `pgettext_iface()`を経由した場合：<br>
+  「英文に対応する日本語」の取得が先に行われるので、日本語文章に対してフォーマットを適用できる<br>
+ 　`"Object is {name}"　→　"オブジェクトは {name} です"　→　フォーマット適用　→　"オブジェクトは Cube です"`
+</details>
 
 ![](https://github.com/nikogoli/Testing_Traslation_using_string_format/blob/main/result.png)
 
