@@ -63,7 +63,7 @@ class AddonPreferences(bpy.types.AddonPreferences):
 		box = layout.box()
 		box.label(text="name = context.active_object.name")
 		box.label(text='翻訳辞書その1：  "1: Active Object is %s"　→　"1: アクティブオブジェクトは %s です"')
-		box.label(text='翻訳辞書その2：  "1: Active Object is {}"　→　"1: アクティブオブジェクトは {} です"')
+		box.label(text='翻訳辞書その2：  "2: Active Object is {}"　→　"2: アクティブオブジェクトは {} です"')
 		box.label(text='翻訳辞書その3：  \'f"3: Active Object is {name}"\'　→　\'f"3: アクティブオブジェクトは {name} です"\'')
 		box.label(text='翻訳辞書その4：  "4: Active Object is {name}"　→　"4: アクティブオブジェクトは {name} です"')
 
