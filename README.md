@@ -1,0 +1,2 @@
+# Testing_Traslation_using_string_format
+Blender 上での翻訳において、文字列フォーマットを利用する方法のテスト
