@@ -12,77 +12,39 @@
 	ツールチップ(多分description)では`bpy.app.translations.pgettext_tip()`を使う<br>
 	`bpy.app.translations.pgettext()`でも可能だが、公式側は推奨していない
 
-- %演算子 ・ `str.format()`を使う方法
+- %演算子や `str.format()`を使う方法
+	```python
+	# 辞書のイメージ(%演算子)： "Active Object is %s"　→　"アクティブオブジェクトは %s です"
+	# 　　　　　　(format())： "Active Object is {}"　→　"アクティブオブジェクトは {} です"
+	
+	# 翻訳結果にフォーマットを適用するので、pgettext_iface() の外に "% (~)" や ".format(~)"を記述する
+	label(text = bpy.app.translations.pgettext_iface("Active Object is %s") % (context.active_object.name) )
+	label(text = bpy.app.translations.pgettext_iface("Active Object is {}").format(context.active_object.name) )
+	```
 	- 長所：記述量が少ない
 	- 短所：辞書側の記述が `"{} を削除しました"` のようになり、少し情報不足
 
 
 - f 文字列を使う方法
+	- その1： 'f"{~}"'のように f を含めて文章を翻訳(置換)し、`eval()`を使ってf 文字列として評価する
+	- その2：　"{~}"のように f は含めず文章を翻訳(置換)し、f を追加した上で`eval()`で評価を使ってf 文字列として評価する
+	```python
+	# 辞書のイメージ(その1)： 'f"Active Object is {name}"'　→　'f"アクティブオブジェクトは {name} です"'
+	# 　　　　　　　(その2)： "Active Object is {name}"　→　"アクティブオブジェクトは {name} です"
+	
+	# その1  eval( 'f"名前は {name} です"' ) のようなもの
+	label(text = eval(
+		bpy.app.translations.pgettext_iface('f"Active Object is {context.active_object.name}"' )
+		))
+	
+	# その2  eval( f'f"{名前は {name} です}"' ) のようなもの
+	label(text = eval(
+		f'f"{ bpy.app.translations.pgettext_iface("Active Object is {name}") }"'
+		))
+	```
 	- 長所：`"{object.name} を削除しました"` のようになるので、結果が想像しやすい
-	- 短所：必要な処理が増え、クォーテーションが多用されるのでコードが読みづらい<br>
-	　　　(2行に分けて良いならば、それほど問題ではなさそう)
+	- 短所：必要な処理が増え、クォーテーションが多用されるのでコードが読みづらい
 
-
-### 具体的な方法
-----------------
-
-- 辞書のイメージ
-    1. `"Active Object is %s"`　→　`"アクティブオブジェクトは %s です"`
-    2. `"Active Object is {}"`　→　`"アクティブオブジェクトは {} です"`
-    3. `\'f"Active Object is {name}"\'`　→　`\'f"アクティブオブジェクトは {name} です"\'`
-    4. `"Active Object is {name}"`　→　`"アクティブオブジェクトは {name} です"`
-    <details><summary>実際の辞書</summary>
-    
-    ```python
-    translation_dict = {
-    	"en_US" :{
-    		("*", "1: Active Object is %s") : "1: Active Object is %s",
-    		("*", "2: Active Object is {}") : "2: Active Object is {}",
-    		("*", 'f"3: Active Object is {name}"') : 'f"3: Active Object is {name}"',
-    		("*", "4: Active Object is {name}") : "4: Active Object is {name}",
-    		},
-    	"ja_JP" :
-    		{
-    		("*", "1: Active Object is %s") : "1: アクティブオブジェクトは %s です",
-    		("*", "2: Active Object is {}") : "2: アクティブオブジェクトは {} です",
-    		("*", 'f"3: Active Object is {name}"') : 'f"3: アクティブオブジェクトは {name} です"',
-    		("*", "4: Active Object is {name}") : "4: アクティブオブジェクトは {name} です",
-    		}
-    }
-    ```
-    注意：辞書の key と英語の翻訳先に同じテキストを設定している
-    </details>
-
-
-- %演算子を使う方法
-```python
-# 翻訳結果にフォーマットを適用するので、pgettext_iface() の外に "% (~)"を記述する
-label(text = bpy.app.translations.pgettext_iface("Active Object is %s") % (context.active_object.name) )
-```
-
-- `str.format()`を使う方法
-```python
-# 翻訳結果にフォーマットを適用するので、pgettext_iface() の外に ".format(~)"を記述する
-label(text = bpy.app.translations.pgettext_iface("Active Object is {}").format(context.active_object.name) )
-```
-
-- f 文字列を使う方法その1： f"~"を直接記述し、全体を\' \'で囲む　→　翻訳結果を`eval()`で評価
-```python
-# eval( 'f"名前は {name} です"' ) のようなもの。もっと良い方法があると思う
-label(text = eval(
-        bpy.app.translations.pgettext_iface('f"Active Object is {context.active_object.name}"' )
-        )
-    )
-```
-
-- f文字列を使う方法その2： f"~"は記述せず、翻訳後に追加する　→　`eval()`で評価
-```python
-# eval( f'f"{名前は {name} です}"' ) のようなもの。もっと良い方法が知りたい
-label(text = eval(
-        f'f"{bpy.app.translations.pgettext_iface("4: Active Object is {name}")}"'
-        )
-    )
-```
 
 
 ### 結果
